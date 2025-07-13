@@ -1,4 +1,5 @@
 import datetime
+import pandas as pd
 
 
 def greeting_user() -> str:
@@ -18,3 +19,14 @@ def greeting_user() -> str:
         if hour in period_hours:
             greetung = list_hours
     return greetung
+
+def reader_transaction_excel(file_path: str) -> list[dict]:
+    """Принимает на данные с транзакциями в формате excel  и возвращает список словарей"""
+    try:
+        df = pd.read_excel(file_path)
+        excel_data = df.to_dict(orient="records")
+        return excel_data
+    except FileNotFoundError:
+        raise FileNotFoundError(f"По заданному пути {file_path} ничего не найдено")
+    except Exception as e:
+        raise Exception(f"Ошибка {e}")
