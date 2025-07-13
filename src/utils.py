@@ -11,8 +11,9 @@ def greeting_user () -> str:
     current_date_time = datetime.datetime.now()
     current_time = current_date_time.time()
     hour = current_time.hour
-    for i in dict_time:
-        d = dict_time[i]
-        if hour in d:
-           return (i)
+    for list_hours in dict_time:
+        period_hours = dict_time[list_hours]
+        if hour in period_hours:
+           return (list_hours)
+
 
