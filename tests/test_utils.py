@@ -11,8 +11,7 @@ def test_greeting_user (return_value=None):
     datetime.datetime.now() == mock_greeting
     assert greeting_user() == "Добрый день"
 
-
-# @patch('utils.hour')
-# def test_greeting_user_2 (mock_greeting_2):
-#     mock_greeting_2.return_value == 15
-#     assert greeting_user() == "Добрый день"
+@patch('src.utils.datetime.datetime')
+def test_greeting_user_2 (mock_greeting_2):
+    mock_greeting_2.now.return_value.time.return_value.hour = 1
+    assert greeting_user() == "Доброй ночи"
