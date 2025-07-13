@@ -7,10 +7,10 @@ import src.utils
 from src.utils import greeting_user, reader_transaction_excel
 
 
-def test_greeting_user (return_value=None):
-    mock_greeting = Mock (return_value == 2025, 7, 13, 13, 50, 6)
-    datetime.datetime.now() == mock_greeting
-    assert greeting_user() == "Добрый день"
+# def test_greeting_user ():
+#     mock_greeting = Mock(turn_value = datetime.datetime(2025, 7, 13, 13, 50, 6))
+#     datetime.datetime.now() == mock_greeting
+#     assert greeting_user() == "Добрый день"
 
 @patch('src.utils.datetime.datetime')
 def test_greeting_user_2 (mock_greeting_2):
@@ -32,7 +32,7 @@ class TestReaderTransactionExcel(unittest.TestCase):
         result = reader_transaction_excel("dummy.xlsx")
 
         # Проверяем результат
-        expected = [{{'id': {0: 1, 1: 2}, 'amount': {0: 100.50, 1: 200.75}}]
+        expected = {'id': {0: 1, 1: 2}, 'amount': {0: 100.50, 1: 200.75}}
         self.assertEqual(result, expected)
         mock_read_excel.assert_called_once_with("dummy.xlsx")
 
