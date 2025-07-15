@@ -17,7 +17,6 @@ df = df[(df['Дата платежа'] >= data_start) & (df['Дата плате
 
 
 
-
 print(date_end)
 print(data_start)
 print(df)
