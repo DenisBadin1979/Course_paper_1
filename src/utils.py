@@ -1,8 +1,10 @@
 import datetime
-
 import pandas
 import pandas as pd
-
+import os
+import requests
+from dotenv import load_dotenv
+load_dotenv()
 
 def greeting_user() -> str:
     """Приветствие в формате Доброе утро/Добрый день/Добрый вечер/Доброй ночи в зависимости от текущего времени"""
@@ -73,6 +75,19 @@ def total_transaction(df: pandas) -> list[dict]:
     except Exception as e:
         raise Exception(f"Ошибка {e} столбец не найден")
 
+def currency_converter() -> list:
+    """Функцию получения курса валюты по EUR, USD, CHN"""
+    url = "https://api.apilayer.com/exchangerates_data/latest"
+    payload = {"base": "RUB", "symbols" : "USD, EUR, CNY"}
+    api_key_d = os.getenv("API_KEY_CUR")
+    headers = {"apikey": api_key_d}
+    response = requests.get(url, headers=headers, params=payload)
+    result_convert = response.json()
+    rate_currency = result_convert['rates']
+    list_currency = []
+    for key, value in rate_currency.items():
+        list_currency.append({'currency' : key, 'rate' : round(1/value, 2)})
+    return list_currency
 
 
 name_path = 'data/operations.xlsx'
@@ -82,3 +97,4 @@ tran = total_transaction(dt_period)
 print(greeting_user())
 print(trat)
 print(tran)
+print(currency_converter())
