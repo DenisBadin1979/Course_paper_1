@@ -90,11 +90,12 @@ def currency_converter() -> list:
     return list_currency
 
 
-name_path = 'data/operations.xlsx'
-dt_period = reader_transaction_excel(name_path)
-trat = total_card(dt_period)
-tran = total_transaction(dt_period)
-print(greeting_user())
-print(trat)
-print(tran)
-print(currency_converter())
+
+# name_path = 'data/operations.xlsx'
+# dt_period = reader_transaction_excel(name_path)
+# trat = total_card(dt_period)
+# tran = total_transaction(dt_period)
+# print(greeting_user())
+# print(trat)
+# print(tran)
+# print(currency_converter())
