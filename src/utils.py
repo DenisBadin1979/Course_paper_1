@@ -75,10 +75,11 @@ def total_transaction(df: pandas) -> list[dict]:
     except Exception as e:
         raise Exception(f"Ошибка {e} столбец не найден")
 
-def currency_converter() -> list:
-    """Функцию получения курса валюты по EUR, USD, CHN"""
+def currency_converter(user_currencies: list) -> list:
+    """Функцию получения курса валюты по заданным в списке валют"""
     url = "https://api.apilayer.com/exchangerates_data/latest"
-    payload = {"base": "RUB", "symbols" : "USD, EUR, CNY"}
+    str_cur = ", ".join(user_currencies)
+    payload = {"base": "RUB", "symbols" : str_cur}
     api_key_d = os.getenv("API_KEY_CUR")
     headers = {"apikey": api_key_d}
     response = requests.get(url, headers=headers, params=payload)
@@ -89,7 +90,20 @@ def currency_converter() -> list:
         list_currency.append({'currency' : key, 'rate' : round(1/value, 2)})
     return list_currency
 
+def stock_sandp500(stocks:list) -> list:
+    """Функцию получения курса акций S&P500"""
+    api_key_dt = os.getenv("API_KEY_STOCK")
+    list_stock = []
+    for ak in range(len(stocks)):
+        response = requests.get(f'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol='
+                                f'{stocks[ak]}&apikey={api_key_dt}')
+        result_stock = response.json()
+        stock_i = result_stock.get("Global Quote")
+        dict_i = {"stock": stock_i.get('01. symbol'), "prices": stock_i.get('05. price')}
+        list_stock.append(dict_i)
 
+
+    return list_stock
 
 # name_path = 'data/operations.xlsx'
 # dt_period = reader_transaction_excel(name_path)
