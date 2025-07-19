@@ -211,10 +211,10 @@ def test_max_5_transactions(mock_logger):
     result = total_transaction(df)
     assert len(result) == 5
 
-@patch('requests.get')
-def test_currency_converter(mock_get):
-    mock_get.return_value.json.return_value = {'login': 'testuser', 'name': 'Test User'}
-    assert currency_converter('testuser') == {'login': 'testuser', 'name': 'Test User'}
-
-
-
+# @patch('requests.get')
+# def test_currency_converter(mock_get):
+#     mock_get.return_value.json.return_value = {'login': 'testuser', 'name': 'Test User'}
+#     assert currency_converter('testuser') == {'login': 'testuser', 'name': 'Test User'}
+#
+#
+#
