@@ -143,14 +143,3 @@ def stock_sandp500(stocks:list) -> list:
         raise Exception(f"Ошибка {e}")
 
 
-
-# name_path = 'data/operations.xlsx'
-# dt_period = reader_transaction_excel(name_path)
-# trat = total_card(dt_period)
-# tran = total_transaction(dt_period)
-# print(greeting_user())
-# print(trat)
-# print(tran)
-# print(currency_converter(["USD", "EUR"]))
-# # print(stock_sandp500(["AAPL", "AMZN", "GOOGL", "MSFT", "TSLA"]))
-#
