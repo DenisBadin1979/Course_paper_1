@@ -1,7 +1,8 @@
+import json
 from json import JSONEncoder
 from locale import currency
 
-from utils import greeting_user, reader_transaction_excel, total_card, total_transaction, currency_converter, \
+from src.utils import greeting_user, reader_transaction_excel, total_card, total_transaction, currency_converter, \
     stock_sandp500
 
 
@@ -18,11 +19,6 @@ def main_page (path_file_data: str) -> JSONEncoder:
     user_currencies = currency_converter (["USD", "EUR"])
     user_stocks = stock_sandp500 (["AAPL", "AMZN", "GOOGL", "MSFT", "TSLA"])
 
-
-
-
-
-
     dict_end = {
                 "greeting" : greetings_time,
                 "cards" : trat,
@@ -30,7 +26,8 @@ def main_page (path_file_data: str) -> JSONEncoder:
                 "currency_rates": user_currencies,
                 "stock_prices": user_stocks
                 }
-    return dict_end
+    json_data = json.dumps(dict_end)
+    return json_data
 
 
 
@@ -38,5 +35,5 @@ def main_page (path_file_data: str) -> JSONEncoder:
 
 
 
-name_path = 'data/operations.xlsx'
-print(main_page(name_path))
+# name_path = 'data/operations.xlsx'
+# print(main_page(name_path))
