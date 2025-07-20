@@ -1,5 +1,4 @@
 import json
-from json import JSONEncoder
 
 from src.utils import (
     currency_converter,
@@ -11,7 +10,7 @@ from src.utils import (
 )
 
 
-def main_page(path_file_data: str) -> JSONEncoder:
+def main_page(path_file_data: str) -> str:
     """Функция предоставляет JSON-ответ с данными о расходах за месяц, сумме кешбэка"""
     # Вначале приветствие пользователя в соответствии временем суток
     greetings_time = greeting_user()

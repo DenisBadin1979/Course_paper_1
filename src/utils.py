@@ -44,7 +44,7 @@ def greeting_user() -> str:
     return hello_user
 
 
-def reader_transaction_excel(file_path: str) -> list[dict]:
+def reader_transaction_excel(file_path: str) -> pd.DataFrame:
     """Принимает на данные с транзакциями в формате excel и возвращает dataframe и фильтрует его по операциям
     за период с начала месяца, на который выпадает входящая дата, по входящую дату"""
     try:
@@ -97,7 +97,7 @@ def total_card(df: pd.DataFrame) -> list[dict]:
         raise Exception(f"Ошибка {e}\n столбец не найден")
 
 
-def total_transaction(df: pandas) -> list[dict]:
+def total_transaction(df: pd.DataFrame) -> list[dict]:
     """Функция принимает DataFrame и выводит (возвращает) список словарей где указаны  ТОР5 транзакций"""
     try:
         df = df.drop(
