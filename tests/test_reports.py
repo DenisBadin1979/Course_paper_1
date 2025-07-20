@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 import pytest
 
-from src.reports import my_decorator_noarg, my_decorator_arg, spending_by_category
+from src.reports import my_decorator_noarg, spending_by_category
 
 
 class TestDecorator(unittest.TestCase):
