@@ -5,11 +5,11 @@ from unittest.mock import Mock
 import pandas as pd
 import pytest
 from unittest.mock import patch
-import src.utils
+
 import requests
 from src.utils import greeting_user, reader_transaction_excel, total_card, total_transaction
 from src.utils import  currency_converter, stock_sandp500
-
+import os
 
 @patch('src.utils.datetime.datetime')
 def test_greeting_user_2 (mock_greeting_2):
@@ -211,10 +211,116 @@ def test_max_5_transactions(mock_logger):
     result = total_transaction(df)
     assert len(result) == 5
 
-# @patch('requests.get')
-# def test_currency_converter(mock_get):
-#     mock_get.return_value.json.return_value = {'login': 'testuser', 'name': 'Test User'}
-#     assert currency_converter('testuser') == {'login': 'testuser', 'name': 'Test User'}
-#
-#
-#
+
+class TestCurrencyConverter(unittest.TestCase):
+
+    @patch('src.utils.requests.get')
+    @patch('src.utils.os.getenv', return_value="fake_api_key")
+    def test_successful_conversion(self, mock_getenv, mock_get):
+        """Тест успешного получения курсов валют"""
+        # Подготовка мок-ответа API
+        mock_response = MagicMock()
+        mock_response.json.return_value = {
+            'rates': {'USD': 0.011, 'EUR': 0.010}
+        }
+        mock_get.return_value = mock_response
+
+        # Вызов тестируемой функции
+        result = currency_converter(['USD', 'EUR'])
+
+        # Проверки
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result, [
+            {'currency': 'USD', 'rate': round(1 / 0.011, 2)},
+            {'currency': 'EUR', 'rate': round(1 / 0.010, 2)}
+        ])
+
+        # Проверка параметров запроса
+        mock_get.assert_called_once_with(
+            "https://api.apilayer.com/exchangerates_data/latest",
+            headers={"apikey": "fake_api_key"},
+            params={"base": "RUB", "symbols": "USD, EUR"}
+        )
+
+    @patch('src.utils.requests.get')
+    @patch('src.utils.os.getenv', return_value="fake_api_key")
+    def test_api_exception_handling(self, mock_getenv, mock_get):
+        """Тест обработки ошибки API"""
+        # Эмуляция исключения при запросе
+        mock_get.side_effect = requests.exceptions.RequestException("API error")
+
+        # Проверка вызова исключения
+        with self.assertRaises(Exception) as context:
+            currency_converter(['USD'])
+
+        # Проверка сообщения об ошибке
+        self.assertIn("API error", str(context.exception))
+
+
+    @patch('src.utils.requests.get')
+    def test_invalid_json_response(self, mock_get):
+        mock_response = MagicMock()
+        mock_response.json.side_effect = ValueError("Invalid JSON")
+        mock_get.return_value = mock_response
+
+        with self.assertRaises(Exception) as context:
+            currency_converter(['USD'])
+
+        self.assertIn("Invalid JSON", str(context.exception))
+
+
+class TestStockSP500(unittest.TestCase):
+
+    @patch('src.utils.requests.get')
+    @patch('src.utils.os.getenv', return_value="fake_stock_key")
+    def test_successful_stock_retrieval(self, mock_getenv, mock_get):
+        """Тест успешного получения данных по акциям"""
+        # Настраиваем моки для 2 акций
+        mock_responses = [
+            MagicMock(json=MagicMock(return_value={
+                "Global Quote": {
+                    '01. symbol': 'AAPL',
+                    '05. price': '175.43'
+                }
+            })),
+            MagicMock(json=MagicMock(return_value={
+                "Global Quote": {
+                    '01. symbol': 'MSFT',
+                    '05. price': '338.11'
+                }
+            }))
+        ]
+        mock_get.side_effect = mock_responses
+
+        # Вызываем тестируемую функцию
+        result = stock_sandp500(['AAPL', 'MSFT'])
+
+        # Проверяем результаты
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result, [
+            {"stock": "AAPL", "prices": "175.43"},
+            {"stock": "MSFT", "prices": "338.11"}
+        ])
+
+        # Проверяем вызовы API
+        self.assertEqual(mock_get.call_count, 2)
+        mock_get.assert_any_call(
+            'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=AAPL&apikey=fake_stock_key'
+        )
+        mock_get.assert_any_call(
+            'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=MSFT&apikey=fake_stock_key'
+        )
+
+    @patch('src.utils.requests.get')
+    @patch('src.utils.os.getenv', return_value="fake_stock_key")
+    def test_api_error_handling(self, mock_getenv, mock_get):
+        """Тест обработки ошибки API"""
+        # Эмулируем ошибку сети при первом запросе
+        mock_get.side_effect = requests.exceptions.RequestException("API timeout")
+
+        # Проверяем генерацию исключения
+        with self.assertRaises(Exception) as context:
+            stock_sandp500(['AAPL'])
+
+        # Проверяем сообщение об ошибке
+        self.assertIn("API timeout", str(context.exception))
