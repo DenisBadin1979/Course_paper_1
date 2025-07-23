@@ -1,29 +1,36 @@
 import datetime
-from typing import Optional
+from typing import Any, Optional
 
 import pandas as pd
 
 
-def my_decorator_noarg(func):
-    def wrapper(*args, **kwargs):
+def my_decorator_noarg(func: Any) -> Any:
+    """Декоратор без параметра — записывает данные отчета в файл с названием по умолчанию"""
+
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
         df = func(*args, **kwargs)
         df.to_excel("data/report.xlsx", index=False, sheet_name="report")
-
+        return df
     return wrapper
 
 
-def my_decorator_arg(file_record: str):
-    def my_decorator(func):
-        def inner(*args, **kwargs):
+def my_decorator_arg(file_record: str) -> Any:
+    """Декоратор с параметром — принимает имя файла в качестве параметра."""
+
+    def my_decorator(func: Any) -> Any:
+        def inner(*args: Any, **kwargs: Any) -> Any:
             result = func(*args, **kwargs)
             result.to_excel(file_record, index=False, sheet_name="report")
-
+            return result
         return inner
 
     return my_decorator
 
 
+@my_decorator_noarg
+@my_decorator_arg('data/rep.xlsx')
 def spending_by_category(transactions: pd.DataFrame, category: str, date: Optional[str] = None) -> pd.DataFrame:
+    """Функция возвращает траты по заданной категории за последние три месяца (от переданной даты)."""
     if date is None:
         date_end = datetime.datetime.now()
     else:
@@ -41,9 +48,3 @@ def spending_by_category(transactions: pd.DataFrame, category: str, date: Option
     df = df[(df["Дата платежа"] >= date_start) & (df["Дата платежа"] <= date_end) & (df["Категория"].isin([category]))]
     df = df.groupby("Категория")["Сумма операции с округлением"].sum()
     return df
-
-
-tran = pd.read_excel("data/operations.xlsx")
-df_s = spending_by_category(tran, "Транспорт", "25.06.2025")
-# print(df_s)
-# df_s.to_excel('data/report.xlsx',index=False, sheet_name='report')
