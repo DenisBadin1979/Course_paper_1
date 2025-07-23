@@ -35,7 +35,7 @@ class TestMainPage(unittest.TestCase):
         ]
 
         # 2. Вызов тестируемой функции
-        result = main_page("user_data.xlsx")
+        result = main_page("user_data.xlsx", "d")
 
         # 3. Проверка типа результата (JSON-строка)
         self.assertIsInstance(result, str)
@@ -55,7 +55,7 @@ class TestMainPage(unittest.TestCase):
         self.assertEqual(result_dict["stock_prices"][1]["stock"], "TSLA")
 
         # 6. Проверка вызова зависимостей
-        mock_reader.assert_called_once_with("user_data.xlsx")
+        mock_reader.assert_called_once_with("user_data.xlsx", 'd')
         mock_currency.assert_called_once_with(["USD", "EUR"])
         mock_stocks.assert_called_once_with(["AAPL", "AMZN", "GOOGL", "MSFT", "TSLA"])
 
@@ -77,7 +77,7 @@ class TestMainPage(unittest.TestCase):
         mock_stocks.return_value = []
 
         # Вызов функции
-        result = main_page("test.xlsx")
+        result = main_page("test.xlsx", "d")
 
         # Проверка валидности JSON
         try:
@@ -104,7 +104,7 @@ class TestMainPage(unittest.TestCase):
         # Варианты приветствий
         for greeting in ["Доброе утро", "Добрый день", "Добрый вечер", "Доброй ночи"]:
             with patch('src.views.greeting_user', return_value=greeting):
-                result = main_page("test.xlsx")
+                result = main_page("test.xlsx", 'd')
                 result_dict = json.loads(result)
                 self.assertEqual(result_dict["greeting"], greeting)
 

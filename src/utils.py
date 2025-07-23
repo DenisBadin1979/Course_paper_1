@@ -44,12 +44,12 @@ def greeting_user() -> str:
     return hello_user
 
 
-def reader_transaction_excel(file_path: str) -> pd.DataFrame:
+def reader_transaction_excel(file_path: str, date_user: str) -> pd.DataFrame:
     """Принимает на данные с транзакциями в формате excel и возвращает dataframe и фильтрует его по операциям
     за период с начала месяца, на который выпадает входящая дата, по входящую дату"""
     try:
         df = pd.read_excel(file_path)
-        date_end = datetime.datetime.now()
+        date_end = datetime.datetime.strptime(date_user, "%d.%m.%Y")
         data_start = date_end.replace(day=1)
         df["Дата платежа"] = pd.to_datetime(df["Дата платежа"], format="%d.%m.%Y")
         df = df[(df["Дата платежа"] >= data_start) & (df["Дата платежа"] <= date_end)]

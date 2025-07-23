@@ -10,12 +10,12 @@ from src.utils import (
 )
 
 
-def main_page(path_file_data: str) -> str:
+def main_page(path_file_data: str, incoming_date: str) -> str:
     """Функция предоставляет JSON-ответ с данными о расходах за месяц, сумме кешбэка"""
     # Вначале приветствие пользователя в соответствии временем суток
     greetings_time = greeting_user()
     # Формируем дата фрейм с сортировкой по дате месяца
-    df_user = reader_transaction_excel(path_file_data)
+    df_user = reader_transaction_excel(path_file_data, incoming_date)
     # траты по каждой карте
     trat = total_card(df_user)
     # список словарей где указаны  ТОР5 транзакций
