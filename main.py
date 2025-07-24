@@ -41,4 +41,4 @@ def main() -> Any:
     else:
         date_2 = date_user
     trat_categor = spending_by_category(df_use, category_user, date_2)
-    return json_data, trat_categor
+    return trat_categor
