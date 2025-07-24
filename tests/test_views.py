@@ -1,6 +1,6 @@
-import unittest
-from unittest.mock import patch, MagicMock
 import json
+import unittest
+from unittest.mock import MagicMock, patch
 
 # Импортируем тестируемую функцию
 from src.views import main_page
@@ -8,14 +8,15 @@ from src.views import main_page
 
 class TestMainPage(unittest.TestCase):
 
-    @patch('src.views.stock_sandp500')
-    @patch('src.views.currency_converter')
-    @patch('src.views.total_transaction')
-    @patch('src.views.total_card')
-    @patch('src.views.reader_transaction_excel')
-    @patch('src.views.greeting_user')
-    def test_main_page_success(self, mock_greeting, mock_reader, mock_total_card,
-                               mock_total_trans, mock_currency, mock_stocks):
+    @patch("src.views.stock_sandp500")
+    @patch("src.views.currency_converter")
+    @patch("src.views.total_transaction")
+    @patch("src.views.total_card")
+    @patch("src.views.reader_transaction_excel")
+    @patch("src.views.greeting_user")
+    def test_main_page_success(
+        self, mock_greeting, mock_reader, mock_total_card, mock_total_trans, mock_currency, mock_stocks
+    ):
         """Тест успешного формирования JSON-ответа"""
         # 1. Подготовка мок-данных
         mock_greeting.return_value = "Добрый день"
@@ -23,16 +24,10 @@ class TestMainPage(unittest.TestCase):
         mock_total_card.return_value = [{"card": "Visa Gold", "total": 25430.50}]
         mock_total_trans.return_value = [
             {"id": 1, "amount": 12000, "category": "Рестораны"},
-            {"id": 2, "amount": 8500, "category": "Супермаркет"}
+            {"id": 2, "amount": 8500, "category": "Супермаркет"},
         ]
-        mock_currency.return_value = [
-            {"currency": "USD", "rate": 0.011},
-            {"currency": "EUR", "rate": 0.010}
-        ]
-        mock_stocks.return_value = [
-            {"stock": "AAPL", "prices": "175.43"},
-            {"stock": "TSLA", "prices": "210.15"}
-        ]
+        mock_currency.return_value = [{"currency": "USD", "rate": 0.011}, {"currency": "EUR", "rate": 0.010}]
+        mock_stocks.return_value = [{"stock": "AAPL", "prices": "175.43"}, {"stock": "TSLA", "prices": "210.15"}]
 
         # 2. Вызов тестируемой функции
         result = main_page("user_data.xlsx", "d")
@@ -55,18 +50,19 @@ class TestMainPage(unittest.TestCase):
         self.assertEqual(result_dict["stock_prices"][1]["stock"], "TSLA")
 
         # 6. Проверка вызова зависимостей
-        mock_reader.assert_called_once_with("user_data.xlsx", 'd')
+        mock_reader.assert_called_once_with("user_data.xlsx", "d")
         mock_currency.assert_called_once_with(["USD", "EUR"])
         mock_stocks.assert_called_once_with(["AAPL", "AMZN", "GOOGL", "MSFT", "TSLA"])
 
-    @patch('src.views.stock_sandp500')
-    @patch('src.views.currency_converter')
-    @patch('src.views.total_transaction')
-    @patch('src.views.total_card')
-    @patch('src.views.reader_transaction_excel')
-    @patch('src.views.greeting_user')
-    def test_json_serialization(self, mock_greeting, mock_reader, mock_total_card,
-                                mock_total_trans, mock_currency, mock_stocks):
+    @patch("src.views.stock_sandp500")
+    @patch("src.views.currency_converter")
+    @patch("src.views.total_transaction")
+    @patch("src.views.total_card")
+    @patch("src.views.reader_transaction_excel")
+    @patch("src.views.greeting_user")
+    def test_json_serialization(
+        self, mock_greeting, mock_reader, mock_total_card, mock_total_trans, mock_currency, mock_stocks
+    ):
         """Тест корректной сериализации в JSON"""
         # Подготовка минимального рабочего набора данных
         mock_greeting.return_value = "Тестовое приветствие"
@@ -86,13 +82,12 @@ class TestMainPage(unittest.TestCase):
         except json.JSONDecodeError:
             self.fail("Возвращен невалидный JSON")
 
-    @patch('src.views.stock_sandp500')
-    @patch('src.views.currency_converter')
-    @patch('src.views.total_transaction')
-    @patch('src.views.total_card')
-    @patch('src.views.reader_transaction_excel')
-    def test_greeting_inclusion(self, mock_reader, mock_total_card,
-                                mock_total_trans, mock_currency, mock_stocks):
+    @patch("src.views.stock_sandp500")
+    @patch("src.views.currency_converter")
+    @patch("src.views.total_transaction")
+    @patch("src.views.total_card")
+    @patch("src.views.reader_transaction_excel")
+    def test_greeting_inclusion(self, mock_reader, mock_total_card, mock_total_trans, mock_currency, mock_stocks):
         """Тест обязательного включения приветствия"""
         # Подготовка данных
         mock_reader.return_value = MagicMock()
@@ -103,9 +98,7 @@ class TestMainPage(unittest.TestCase):
 
         # Варианты приветствий
         for greeting in ["Доброе утро", "Добрый день", "Добрый вечер", "Доброй ночи"]:
-            with patch('src.views.greeting_user', return_value=greeting):
-                result = main_page("test.xlsx", 'd')
+            with patch("src.views.greeting_user", return_value=greeting):
+                result = main_page("test.xlsx", "d")
                 result_dict = json.loads(result)
                 self.assertEqual(result_dict["greeting"], greeting)
-
-

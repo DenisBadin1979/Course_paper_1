@@ -6,7 +6,7 @@ from utils import (
     reader_transaction_excel,
     stock_sandp500,
     total_card,
-    total_transaction
+    total_transaction,
 )
 
 

@@ -11,6 +11,7 @@ def my_decorator_noarg(func: Any) -> Any:
         df = func(*args, **kwargs)
         df.to_excel("data/report.xlsx", index=False, sheet_name="report")
         return df
+
     return wrapper
 
 
@@ -22,13 +23,14 @@ def my_decorator_arg(file_record: str) -> Any:
             result = func(*args, **kwargs)
             result.to_excel(file_record, index=False, sheet_name="report")
             return result
+
         return inner
 
     return my_decorator
 
 
 @my_decorator_noarg
-@my_decorator_arg('data/rep.xlsx')
+@my_decorator_arg("data/rep.xlsx")
 def spending_by_category(transactions: pd.DataFrame, category: str, date: Optional[str] = None) -> pd.DataFrame:
     """Функция возвращает траты по заданной категории за последние три месяца (от переданной даты)."""
     if date is None:
